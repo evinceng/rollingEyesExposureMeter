@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
-import numpy as np
+"""
+Created on Wed Apr 04 13:13:48 2018
+
+@author: evin
+"""
+import time
+from random import randint
+import collections
 
 class Model():
  
     def __init__(self):
-        self.xpoint=200
-        self.ypoint=200
-        self.res = None
+        self.xs=collections.deque(5*[0], 5)
+        self.ys=collections.deque(5*[0], 5)
   
   
     def calculate(self):
-        x,y=np.meshgrid(np.linspace(-5,5,self.xpoint),np.linspace(-5,5,self.ypoint))
-        z=np.cos(x**2*y**3) 
-        self.res = {"x":x,"y":y,"z":z}
+        self.xs.append(time.strftime("%H:%M:%S"))
+        self.ys.append(randint(0,10))
