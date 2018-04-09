@@ -6,6 +6,7 @@ Created on Wed Apr 04 13:12:21 2018
 """
 
 import Tkinter as Tk
+import ttk
 
 class View():
     def __init__(self, master):
@@ -18,8 +19,13 @@ class MainPanel():
      def __init__(self, root):
         self.frame2 = Tk.Frame(root)
         self.frame2.pack(side=Tk.LEFT, fill=Tk.BOTH, expand=1)
-        self.slider = Tk.Scale(self.frame2, from_ = 0, to_ = 1, orient=Tk.HORIZONTAL, resolution = 0.001)
-        self.slider.pack()
+        self.progressbar = ttk.Progressbar(self.frame2, length=200,
+                                           mode='indeterminate')
+        self.progressbar.pack()
+        
+        self.slider = Tk.Scale(self.frame2, from_ = 0, to_ = 1,
+                               orient=Tk.HORIZONTAL, resolution = 0.001)
+        self.slider.pack()        
         
 class SidePanel():
     def __init__(self, root):

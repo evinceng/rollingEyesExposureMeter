@@ -4,6 +4,7 @@ Created on Wed Apr 04 13:13:48 2018
 
 @author: evin
 """
+from random import randint
 
 class Model():
  
@@ -12,4 +13,5 @@ class Model():
   
   
     def start(self):
-        pass
+        return randint(0,100)
+         
