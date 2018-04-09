@@ -20,11 +20,11 @@ class MainPanel():
         self.frame2 = Tk.Frame(root)
         self.frame2.pack(side=Tk.LEFT, fill=Tk.BOTH, expand=1)
         self.progressbar = ttk.Progressbar(self.frame2, length=200,
-                                           mode='indeterminate')
+                                           mode='determinate')
         self.progressbar.pack()
-        
         self.slider = Tk.Scale(self.frame2, from_ = 0, to_ = 1,
                                orient=Tk.HORIZONTAL, resolution = 0.001)
+        
         self.slider.pack()        
         
 class SidePanel():

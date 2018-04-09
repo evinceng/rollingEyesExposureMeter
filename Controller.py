@@ -13,11 +13,10 @@ class Controller():
         self.root = Tk.Tk()
         self.model=Model.Model()
         self.view=View.View(self.root)
-#        self.view.mainpanel.start_button.bind("<Button>", self.start)
         self.view.sidepanel.startBut.bind("<Button>",self.start)
         self.view.sidepanel.stopButton.bind("<Button>",self.stop)
-        self.currentVal = 0
-        self.maxVal = 100
+        self.view.mainpanel.slider.bind("<B1-Motion>", self.read_bytes)
+        self.view.mainpanel.progressbar["maximum"] = 2
   
     def run(self):
         self.root.title("MVC")
@@ -25,15 +24,19 @@ class Controller():
         self.root.mainloop()
          
     def start(self,event):
-        self.view.mainpanel.progressbar["value"] = 0
-        self.view.mainpanel.progressbar["maximum"] = self.maxVal
-        self.read_bytes()
+        self.clearSlider()
 
-    def read_bytes(self):
-        self.currentVal = self.model.start()
-        self.view.mainpanel.progressbar["value"] = self.currentVal
-        self.view.mainpanel.progressbar.after(100, self.read_bytes)
+    def read_bytes(self,event):
+        currentVal = self.view.mainpanel.slider.get()
+        modelVal = self.model.start(currentVal)
+        self.view.mainpanel.progressbar["value"] = modelVal
         
     def stop(self,event):
         self.model.stop()
+        self.clearSlider()
+        
+    def clearSlider(self):
+        self.view.mainpanel.progressbar["value"] = 0
+        
+        
   
