@@ -18,3 +18,4 @@ class Model():
     def calculate(self):
         self.xs.append(time.strftime("%H:%M:%S"))
         self.ys.append(randint(0,10))
+        

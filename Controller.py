@@ -27,7 +27,8 @@ class Controller():
         self.view.fig.canvas.draw()
   
     def my_plot(self,event):
-        ani = animation.FuncAnimation(self.view.fig, self.model.calculate(), interval=1000)
+        self.model.calculate()
+ #       ani = animation.FuncAnimation(self.view.fig, self.model.calculate(), interval=1000)
         self.view.ax0.clear()
         self.view.ax0.plot(self.model.xs,self.model.ys)
         self.view.fig.canvas.draw()
