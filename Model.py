@@ -14,6 +14,8 @@ class Model():
     
     progressBarMaxVal = 2
     """Progress Bar's max value """
+    progressBarMinVal = 0
+    """Progress Bar's min value """
     
     def start(self, slideVal):
         result = 2* slideVal**2

@@ -43,7 +43,7 @@ class Controller():
         self.view.mainPanel.progressbar["value"] = modelVal
         
     def clearSlider(self):
-        self.view.mainPanel.progressbar["value"] = 0
+        self.view.mainPanel.progressbar["value"] = self.model.progressBarMinVal
         
         
   
