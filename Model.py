@@ -9,20 +9,24 @@ class Model():
     """ Class including the main operations of the app.
         (Model of MVC)
     """
-    def __init__(self):  
+    
+    def __init__(self):
         pass
+        
+#first benchmark commented out
+#    progressBarMaxVal = 2
+#    """Progress Bar's max value """
+#    progressBarMinVal = 0
+#    """Progress Bar's min value """
     
-    progressBarMaxVal = 2
-    """Progress Bar's max value """
-    progressBarMinVal = 0
-    """Progress Bar's min value """
-    
-    def start(self, slideVal):
-        result = 2* slideVal**2
-        print slideVal
-        print result
-        return result
-    
+#    def start(self, slideVal):
+#        result = 2* slideVal**2
+#        print slideVal
+#        print result
+#        return result
+        
+    def start(self):
+        pass
     def stop(self):
         pass
          

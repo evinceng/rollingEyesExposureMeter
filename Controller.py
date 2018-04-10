@@ -18,8 +18,9 @@ class Controller():
         self.view=View.View(self.root)
         self.view.sidePanel.startButton.bind("<Button>",self.start)
         self.view.sidePanel.stopButton.bind("<Button>",self.stop)
-        self.view.mainPanel.slider.bind("<B1-Motion>", self.calculateVal)
-        self.view.mainPanel.progressbar["maximum"] = self.model.progressBarMaxVal
+        #first benchmark commented out
+#        self.view.mainPanel.slider.bind("<B1-Motion>", self.calculateVal)
+#        self.view.mainPanel.progressbar["maximum"] = self.model.progressBarMaxVal
   
     def run(self):
         self.root.title("MVC")
@@ -29,21 +30,24 @@ class Controller():
     def start(self,event):
         self.view.sidePanel.startButton.config(state="disabled")
         self.view.sidePanel.stopButton.config(state="normal")
-        self.clearSlider()
+        #first benchmark commented out
+#        self.clearSlider()
         
     def stop(self,event):
         self.view.sidePanel.startButton.config(state="normal")
         self.view.sidePanel.stopButton.config(state="disabled")
-        self.clearSlider()
+        #first benchmark commented out
+#        self.clearSlider()
         self.model.stop()
-
-    def calculateVal(self,event):
-        currentVal = self.view.mainPanel.slider.get()
-        modelVal = self.model.start(currentVal)
-        self.view.mainPanel.progressbar["value"] = modelVal
         
-    def clearSlider(self):
-        self.view.mainPanel.progressbar["value"] = self.model.progressBarMinVal
+#first benchmark commented out
+#    def calculateVal(self,event):
+#        currentVal = self.view.mainPanel.slider.get()
+#        modelVal = self.model.start(currentVal)
+#        self.view.mainPanel.progressbar["value"] = modelVal
+#        
+#    def clearSlider(self):
+#        self.view.mainPanel.progressbar["value"] = self.model.progressBarMinVal
         
         
   
