@@ -9,7 +9,9 @@ class Model():
  
     def __init__(self):  
         pass
-  
+    
+    progressBarMaxVal = 2
+    
     def start(self, slideVal):
         result = 2* slideVal**2
         print slideVal

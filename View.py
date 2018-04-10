@@ -12,8 +12,8 @@ class View():
     def __init__(self, master):
         self.frame = Tk.Frame(master)
         self.frame.pack(side=Tk.LEFT, fill=Tk.BOTH, expand=1)
-        self.mainpanel = MainPanel(master)
-        self.sidepanel=SidePanel(master)
+        self.mainPanel = MainPanel(master)
+        self.sidePanel=SidePanel(master)
  
 class MainPanel():
      def __init__(self, root):
@@ -31,7 +31,7 @@ class SidePanel():
     def __init__(self, root):
         self.frame3 = Tk.Frame(root)
         self.frame3.pack(side=Tk.RIGHT, fill=Tk.BOTH, expand=1)
-        self.startBut = Tk.Button(self.frame3, text="Start ")
-        self.startBut.pack(side="top",fill=Tk.BOTH)
-        self.stopButton = Tk.Button(self.frame3, text="Stop")
+        self.startButton = Tk.Button(self.frame3, text="Start ")
+        self.startButton.pack(side="top",fill=Tk.BOTH)
+        self.stopButton = Tk.Button(self.frame3, text="Stop", state='disabled')
         self.stopButton.pack(side="top",fill=Tk.BOTH)
