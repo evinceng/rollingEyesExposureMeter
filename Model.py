@@ -4,15 +4,37 @@ Created on Wed Apr 04 13:13:48 2018
 
 @author: evin
 """
+import ThreadedSensor
+import bottle
+import Sensor
 
 class Model():
     """ Class including the main operations of the app.
         (Model of MVC)
     """
     
-    def __init__(self):
-        pass
+    def __init__(self, config):
+        self.config = config
+        self.serverHostIP = self.config.get("SERVER", "IP")
+        self.serverHostPort = self.config.getint("SERVER", "Port")
+        self.initTobiiEyeTracker()
+
+    def initTobiiEyeTracker(self):
+        __tobiiConfigSection = "TOBII"
+        tobiiSensor = Sensor.Sensor(__tobiiConfigSection)
+        self.tobiiEyeTracker = ThreadedSensor.ThreadedSensor(tobiiSensor, __tobiiConfigSection)
         
+        __tobiiEyeTrackerServerHostRoute = self.config.get(__tobiiConfigSection, "HostRoute")
+        
+        print "Starting http server on http://",self.serverHostIP,':',self.serverHostPort, __tobiiEyeTrackerServerHostRoute
+        bottle.route(__tobiiEyeTrackerServerHostRoute)(self.tobiiEyeTracker.sensor.respondTracker)
+        
+    def start(self):
+        self.tobiiEyeTracker.startListening()
+    
+    def stop(self):
+        self.tobiiEyeTracker.stopListening()
+          
 #first benchmark commented out
 #    progressBarMaxVal = 2
 #    """Progress Bar's max value """
@@ -24,9 +46,4 @@ class Model():
 #        print slideVal
 #        print result
 #        return result
-        
-    def start(self):
-        pass
-    def stop(self):
-        pass
          

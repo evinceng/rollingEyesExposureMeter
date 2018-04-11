@@ -6,7 +6,6 @@ Created on Wed Apr 04 13:12:21 2018
 """
 
 import Tkinter as Tk
-import ttk
 
 class View():
     """ The user interface(GUI) of app.
