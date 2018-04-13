@@ -7,16 +7,16 @@ Created on Wed Apr 04 13:13:48 2018
 import ThreadedSensor
 import bottle
 import Sensor
+import config
 
 class Model():
     """ Class including the main operations of the app.
         (Model of MVC)
     """
     
-    def __init__(self, config):
-        self.config = config
-        self.serverHostIP = self.config.get("SERVER", "IP")
-        self.serverHostPort = self.config.getint("SERVER", "Port")
+    def __init__(self):
+        self.serverHostIP = config.getConfig().get("SERVER", "IP")
+        self.serverHostPort = config.getConfig().getint("SERVER", "Port")
         self.initTobiiEyeTracker()
 
     def initTobiiEyeTracker(self):
@@ -24,7 +24,7 @@ class Model():
         tobiiSensor = Sensor.Sensor(__tobiiConfigSection)
         self.tobiiEyeTracker = ThreadedSensor.ThreadedSensor(tobiiSensor, __tobiiConfigSection)
         
-        __tobiiEyeTrackerServerHostRoute = self.config.get(__tobiiConfigSection, "HostRoute")
+        __tobiiEyeTrackerServerHostRoute = config.getConfig().get(__tobiiConfigSection, "HostRoute")
         
         print "Starting http server on http://",self.serverHostIP,':',self.serverHostPort, __tobiiEyeTrackerServerHostRoute
         bottle.route(__tobiiEyeTrackerServerHostRoute)(self.tobiiEyeTracker.sensor.respondTracker)

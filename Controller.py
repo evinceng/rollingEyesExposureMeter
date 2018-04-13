@@ -12,18 +12,18 @@ import bottle
 import EnableCors
 import threading
 import StoppableWSGIRefServer
+import config
 
 class Controller():
     """Class establishing communication between user interface(view) and model.
        (Controller of MVC)
     """
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self):
         self.initializeBottleServer()
         self.root = Tk.Tk()
         self.root.protocol("WM_DELETE_WINDOW", self.onClosing)
-        self.model=Model.Model(config)
+        self.model=Model.Model()
         self.view=View.View(self.root)
         self.view.sidePanel.startButton.bind("<Button>",self.start)
         self.view.sidePanel.stopButton.bind("<Button>",self.stop)
@@ -64,8 +64,8 @@ class Controller():
         app = bottle.app()
         app.install(EnableCors.EnableCors())
         
-        __serverHostIP = self.config.get("SERVER", "IP")
-        __serverHostPort = self.config.getint("SERVER", "Port")
+        __serverHostIP = config.getConfig().get("SERVER", "IP")
+        __serverHostPort = config.getConfig().getint("SERVER", "Port")
         print "Starting http server on http://",__serverHostIP,':',__serverHostPort
         
         self.server = StoppableWSGIRefServer.StoppableWSGIRefServer(host=__serverHostIP, port=__serverHostPort)
