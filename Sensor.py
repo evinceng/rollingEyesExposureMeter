@@ -83,7 +83,7 @@ class Sensor():
         data["receivedEventCounter"] = self.__receivedEventCounter        
         data[self.logFileName] = self.sensorMessage
         json_data = json.dumps(data)
-        
+        self.sensorMessage = []
         return json_data
     
     def stop(self):
