@@ -6,12 +6,14 @@ Created on Tue Apr 10 16:05:35 2018
 """
 import json
 from bottle import response
-import datetime
-import time
-import threading
+from datetime import datetime
 import socket
 import config
 import sys
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+from dateutil.tz import tzlocal
+from collections import OrderedDict
 
 class Sensor():
     
@@ -20,12 +22,10 @@ class Sensor():
     #sensorMessage.append(json.loads('{"tobiiEyeTracker":{"timeStamp":"30.12.2015 14:06:20.2442","leftPos":{"x":"-0,258863875351471","y":"11,5149518687205","z":"60,9095247803002"},"rightPos":{"x":"5,88168331298095","y":"11,2362714331765","z":"61,0613078775579"},"leftGaze":{"x":"2,38144559635971","y":"16,7283881083418","z":"4,40281135417063"},"rightGaze":{"x":"-3,55454772939922","y":"17,2529816540119","z":"4,59374825056375"},"leftPupilDiameter":"2,642151","rightPupilDiameter":"2,673187"}}'))
     
     def __init__(self, configSectionName):
-        __timeStamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H%M%S')
         self.configSectionName = configSectionName
-        self.logFileName = configSectionName + "Log_" + __timeStamp + ".log"
-        self.keepListeningCond = threading.Condition()
         self.halt = 0
         self.__receivedEventCounter = 0
+        self.__initDBConnection()
         
     
     def listenSocketFromDotNET(self):
@@ -34,10 +34,19 @@ class Sensor():
         
         try:
             while True:
-#                print "current time is ", time.strftime("%H:%M:%S")
                 # Wait for a connection
                 print >>sys.stderr, "Server socket for incomming ", self.configSectionName, " data: waiting for a connection"
                 connection, client_address = self.sock.accept()
+                
+                self.sessionStartTime = datetime.now()
+                
+#                print "sessionstarttime is ############"
+#                print self.sessionStartTime
+#                print "sessionstarttime is ###############"
+                
+                self.userPropsDict = self.createUserPropsDict()
+                __timeStamp = self.sessionStartTime.strftime('%Y-%m-%d_%H%M%S')
+                self.logFileName = self.configSectionName + "Log_" + __timeStamp + ".log"
                 
                 if not self.halt:
                     try:
@@ -52,6 +61,7 @@ class Sensor():
                                     data = __parsedData
                                 self.sensorMessage.append(json.loads(data))
                                 self.__writeToFile(data, "a")
+                                self.__writeToDB(data)
                             
                                 if data:
                                     print >>sys.stderr, "Server socket for incomming ", self.configSectionName, " data: sending data back to the client"
@@ -108,6 +118,20 @@ class Sensor():
         sock.listen(1)
         return sock
     
+    def __initDBConnection(self):
+        dbSectionName = "MONGODB"
+        __host = config.getConfig().get(dbSectionName, "Host")
+        __port = config.getConfig().getint(dbSectionName, "Port")
+        try: 
+            client = MongoClient(host=__host, port=__port)
+        except ConnectionFailure, e:
+            sys.stderr.write("Could not connect to MongoDB: %s" % e)
+            sys.exit(1)
+            
+        dbhost = client[config.getConfig().get(dbSectionName, "DBName")]
+        #self.userCollection = dbhost[config.getConfig().get(dbSectionName, "UserCollection")]
+        self.sensorCollection = dbhost[config.getConfig().get(self.configSectionName, "DBCollectionName")]
+         
     def __writeToFile(self, data, mode):
         """ 
         Opens the file named sectionName+LocalLoggingFileName in the specified @mode and writes the
@@ -117,16 +141,47 @@ class Sensor():
         @param mode (char): The mode to open the file
         """
         try:
-            f = open(self.logFileName, mode)                        
-            f.write(data)
+            logFile = open(self.logFileName, mode)                        
+            logFile.write(data)
         except IOError:
             print("Error while writing to file: ")
         finally:
-            f.close()
+            logFile.close()
+            
+    def __writeToDB(self, data):
+        #should be implemented for each sensor separately
+        shapedDataDict = self.shapeDataForDB(data)
+        
+        #calculate relative time since the start of the session
+        diff = shapedDataDict["timeStamp"] - self.userPropsDict["sessionStartTime"]
+        self.userPropsDict["relativeTime"] = diff.total_seconds()
+        
+        #add user nd session related info infront of the sensor info
+        #shapedDataDict.update(self.userPropsDict)
+        concatedDict = OrderedDict(list(self.userPropsDict.items()) + list(shapedDataDict.items()))
+        #save to DB
+        self.sensorCollection.insert_one(concatedDict)
             
     def parseData(self, data):
         if config.getConfig().getboolean(self.configSectionName, "IsDataHasToBeParsed"):
             raise NotImplementedError("It seems that the data has to be parsed. Please override and implement parseData method!")
         else:
             raise NotImplementedError("It is declared that the data don\'t need to be parsed. Please check config file!")
+            
+    def shapeDataForDB(self, data):
+        raise NotImplementedError("The prepareDataForDB method should be overridden by every new sensor class inheriting Sensor class!")
+        
+    def createUserPropsDict(self):
+        userPropsArr = []
+        userPropsArr.append(("userName",sys.argv[1]))
+        userPropsArr.append(("sessionStartTime", self.sessionStartTime))
+        
+        local_tz_name = datetime.now(tzlocal()).tzname()
+        userPropsArr.append(("timeZoneName", local_tz_name))
+        
+        userPropsArr.append(("sessionID", sys.argv[1] + str(self.sessionStartTime)))
+        
+        userPropsArr.append(("relativeTime", 0))
+        
+        return OrderedDict(userPropsArr)
             

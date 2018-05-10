@@ -6,7 +6,7 @@ Created on Wed Apr 04 13:13:48 2018
 """
 import ThreadedSensor
 import bottle
-import Sensor
+import Tobii
 import config
 
 class Model():
@@ -21,7 +21,7 @@ class Model():
 
     def initTobiiEyeTracker(self):
         __tobiiConfigSection = "TOBII"
-        tobiiSensor = Sensor.Sensor(__tobiiConfigSection)
+        tobiiSensor = Tobii.Tobii(__tobiiConfigSection)
         self.tobiiEyeTracker = ThreadedSensor.ThreadedSensor(tobiiSensor, __tobiiConfigSection)
         
         __tobiiEyeTrackerServerHostRoute = config.getConfig().get(__tobiiConfigSection, "HostRoute")
